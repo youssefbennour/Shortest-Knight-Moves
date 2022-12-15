@@ -7,4 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Aspose.Words" Version="22.12.0" />
+    <PackageReference Include="iTextSharp-LGPL" Version="4.1.6" />
+    <PackageReference Include="iTextSharp.LGPLv2.Core" Version="1.9.4" />
+    <PackageReference Include="VisioForge.DotNet.Core.TRIAL" Version="15.1.12" />
+  </ItemGroup>
+
 </Project>
