@@ -1,229 +1,137 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Aspose.Words;
+using System.Runtime;
+using System.Linq;
 
 namespace Chess {
-    class  Knight {
-        public (int x, int y) cord;
-        public int limite;
-        public string[,] boardMatrix;
-        public (int x, int y) targetArea;
-        int numberOfmoves, paths;
+    public class Knight {
+        public int x, y;
+        public int dis;
+        public List<int> knightMoves;
 
-        public Knight(int lim, int cordX, int cordY) {
-            this.targetArea = (cordX, cordY);
-            this.limite = lim;
-            this.boardMatrix = new string[limite + 2, limite + 2];
-            this.cord.x = 0;
-            this.cord.y = 0;
-            this.numberOfmoves = 0;
-            this.paths = 1;
-
-            for (int i = 0; i < this.limite; i++) {
-                for (int j = 0; j < this.limite; j++) {
-                    this.boardMatrix[i, j] = "0";
-                }
-            }
-            this.boardMatrix[this.limite - 1, 0] = "K";
-            this.boardMatrix[this.limite - this.targetArea.y - 1, this.targetArea.x] = " T";
+        public Knight(int x, int y, int dis, List<int> t) {
+            this.x = x;
+            this.y = y;
+            this.dis = dis;
+            this.knightMoves = t;
+        }
+    }
+    public class  Game {
+        private static bool isInside(int x, int y, int N) {
+            if (x >= 0 && x <= N && y >= 0 && y <= N)
+                return true;
+            return false;
         }
 
-        public void displayBoard() {
-            FileStream ostrm;
-            StreamWriter writer;
-            TextWriter oldOut = Console.Out;
-            try
-            {
-                ostrm = new FileStream("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Redirect.txt", FileMode.OpenOrCreate, FileAccess.Write);
-                writer = new StreamWriter(ostrm);
-            }
-            catch (Exception d)
-            {
-                Console.WriteLine("Cannot open Redirect.txt for writing");
-                Console.WriteLine(d.Message);
-                return;
-            }
-            Console.SetOut(writer);
-            Console.Clear();
-            for (int i = 0; i < this.limite; i++) {
-                for (int j = 0; j < this.limite; j++) {
-                    if (boardMatrix[i, j] == "T") {
-                        Console.ForegroundColor = ConsoleColor.Red;
+        // Method returns minimum step
+        // to reach target position
+        public static List<int> minStepToReachTarget(int[] knightPos,
+                                        int[] targetPos, int N) {
+            // x and y direction, where a knight can move
+            int[] dx = { -2, -1, 1, 2, -2, -1, 1, 2 };
+            int[] dy = { -1, -2, -2, -1, 1, 2, 2, 1 };
 
-                    } else if (boardMatrix[i, j] != "0") {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                    } else {
+            // queue for storing states of knight in board
+            Queue<Knight> q = new Queue<Knight>();
 
-                    }
-                    Console.Write($" {boardMatrix[i, j]}");
-                    Console.ResetColor();
-                }
-                Console.WriteLine();
-            }
-
-            Console.SetOut(oldOut);
-            writer.Close();
-            ostrm.Close();
-            Console.WriteLine("Done");
-
-            var doc = new Aspose.Words.Document("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Redirect.txt");
-
-            doc.Watermark.Remove();
-           
-            //Aspose.Words.Document extractedPage = doc.ExtractPages(0, 1);
-            doc.Save("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Doc.bmp");
-            
+            // push starting position of knight with 0 distance
 
 
-        }
+            q.Enqueue(new Knight(0, 0, 0, new List<int>()));
 
+            Knight currentKnight;
+            int x, y;
+            List<int> tempList = new List<int>();
+            bool[,] visit = new bool[N + 1, N + 1];
 
-        public void moves() {
-            int numberOfUps = (int)(this.targetArea.y / 2);
+            for (int i = 1; i <= N; i++)
+                for (int j = 1; j <= N; j++)
+                    visit[i, j] = false;
 
-            for (int i = 1; i <= numberOfUps; i++) {
-                moveUp(2);
-                if (this.cord.x < this.targetArea.x) {
+            visit[knightPos[0], knightPos[1]] = true;
 
-                    moveRight(1);
+            while (q.Count != 0) {
+                currentKnight = q.Peek();
+                q.Dequeue();
 
-                } else if (this.cord.x > 0) {
-                    moveLeft(1);
-                } else {
-                    moveRight(1);
+                if (currentKnight.x == targetPos[0] && currentKnight.y == targetPos[1]) {
+                    Console.WriteLine("minimum number of steps to reach target : " + currentKnight.dis);
+                    Console.WriteLine("a detailed image containing the shortest path can be found in Your Desktop/Shortest-Path directory.\nThe process may take a while for large input...");
+                    q.Clear();
+                    return currentKnight.knightMoves;
                 }
 
-            }
-            checkCollision();
+                for (int i = 0; i < 8; i++) {
+                    tempList = new List<int>(currentKnight.knightMoves);
 
-            if (this.targetArea.y != this.cord.y) {
-                moveRight(2);
-                moveUp(1);
-            }
-            checkCollision();
+                    x = currentKnight.x + dx[i];
+                    y = currentKnight.y + dy[i];
 
-            int verticalDirection = 0;
-            while (Math.Abs(this.cord.x - this.targetArea.x) > 1) {
-                if (this.cord.x < this.targetArea.x) {
-                    if (verticalDirection % 2 == 0) {
-                        moveUp(1);
-                        moveRight(2);
-                        verticalDirection++;
-                    } else {
-                        moveDown(1);
-                        moveRight(2);
-                        verticalDirection++;
-                    }
-                } else {
-                    if (verticalDirection % 2 == 0) {
-                        moveUp(1);
-                        moveLeft(2);
-                        verticalDirection++;
-                    } else {
-                        moveDown(1);
-                        moveLeft(2);
-                        verticalDirection++;
+                    if (isInside(x, y, N) && !visit[x, y]) {
+                        visit[x, y] = true;
+                        tempList.Add(dx[i]);
+                        tempList.Add(dy[i]);
+                        q.Enqueue(new Knight(x, y, currentKnight.dis + 1, tempList));
                     }
                 }
             }
-            checkCollision();
-
-
-            if ((this.cord.x + 1) == this.targetArea.x && this.cord.y == this.targetArea.y) {
-                moveUp(2); moveRight(3); moveDown(1); moveLeft(2); moveDown(1);
-                checkCollision();
-            } else if (this.cord.x == (this.targetArea.x + 1) && this.cord.y == this.targetArea.y) {
-                moveRight(2); moveUp(2); moveLeft(3); moveDown(2);
-                checkCollision();
-            } else if (this.cord.x == (this.targetArea.x + 1) && this.cord.y == (this.targetArea.y + 1)) {
-                moveUp(2); moveRight(1); moveRight(2); moveDown(1); moveLeft(2); moveDown(2); moveLeft(2);
-                checkCollision();
-            } else if (this.cord.x == (this.targetArea.x - 1) && this.cord.y == (this.targetArea.y + 1)) {
-                moveRight(2); moveUp(1); moveLeft(1); moveDown(2);
-                checkCollision();
-            } else if (this.cord.x == (this.targetArea.x + 1) && this.cord.y == (this.targetArea.y - 1)) {
-                moveLeft(1); moveUp(2); moveLeft(2); moveDown(1);
-                checkCollision();
-            } else if ((this.cord.x + 1) == this.targetArea.x && this.cord.y == (this.targetArea.y - 1)) {
-                moveRight(2); moveUp(1); moveRight(2); moveUp(2); moveLeft(3); moveDown(1);
-                checkCollision();
-            } else if (this.cord.x == this.targetArea.x && this.cord.y == (this.targetArea.y - 1)) {
-                moveRight(2); moveUp(3); moveLeft(2); moveDown(2);
-                checkCollision();
-            } else if (this.cord.x == this.targetArea.x && this.cord.y == (this.targetArea.y + 1)) {
-                moveUp(2); moveRight(2); moveDown(3); moveLeft(2);
-                checkCollision();
-            }
-
+            return new List<int>();
         }
 
-        private void moveUp(int steps) {
-            for (int ups = 0; ups < steps; ++ups) {
-                this.cord.y++;
-                this.numberOfmoves++;
-                if (this.numberOfmoves % 3 == 0) {
-                    this.boardMatrix[this.limite - this.cord.y - 1, this.cord.x] = $"{this.paths}";
-                    this.paths++;
-                }
-                //this.boardMatrix[this.limite - this.cord.y - 1, this.cord.x] = "↑";
+        public static void convertOutputToImage(string result, string filename = "Shortest-Path") {
+            Color fontColor = Color.Black;
+            Color bgColor = Color.White;
+
+            // Set the font and size
+            Font font = new Font("Arial", 16, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            // Set the text to be rendered
+
+            // Measure the size of the text
+            SizeF textSize = MeasureString(result, font);
+
+            // Create a Bitmap to hold the text
+            Bitmap bmp = new Bitmap((int)textSize.Width, (int)textSize.Height);
+
+            // Create a Graphics object for drawing the text
+            Graphics graphics = Graphics.FromImage(bmp);
+
+            // Clear the Bitmap with the background color
+            graphics.Clear(bgColor);
+
+            // Create a Brush to draw the text with
+            Brush brush = new SolidBrush(fontColor);
+
+            // Draw the text onto the Bitmap
+            graphics.DrawString(result, font, brush, 0, 0);
+
+            // Create a directory for storing Knight path images in Desktop
+            string imageOutput = @"C:\Users\Taki Academy\Desktop\Knight-Path-Images";
+            DateTime currentTime = DateTime.Now;
+            if (!Directory.Exists(imageOutput)){
+                Directory.CreateDirectory(imageOutput);
             }
+
+            // Save the Bitmap to a file with 
+            bmp.Save($"{imageOutput}\\{currentTime.ToString("yyyy-MM-dd(HH-mm-ss)")}.png", ImageFormat.Png);
+
+            // Dispose of the Bitmap and Graphics objects
+            bmp.Dispose();
+            graphics.Dispose();
         }
 
-
-
-        private void moveDown(int steps) {
-            for (int downs = 0; downs < steps; ++downs) {
-                this.cord.y--;
-                this.numberOfmoves++;
-
-                if (this.numberOfmoves % 3 == 0) {
-                    this.boardMatrix[this.limite - this.cord.y - 1, this.cord.x] = $"{this.paths}";
-                    this.paths++;
-                }
-
+        private static SizeF MeasureString(string text, Font font) {
+            // Create a Graphics object for measuring the text
+            using (Graphics graphics = Graphics.FromImage(new Bitmap(1, 1))) {
+                // Measure the size of the text
+                return graphics.MeasureString(text, font);
             }
         }
 
-        private void moveLeft(int steps) {
-            for (int lefts = 0; lefts < steps; ++lefts) {
-                this.cord.x--;
-                this.numberOfmoves++;
-
-                if (this.numberOfmoves % 3 == 0) {
-                    this.boardMatrix[this.limite - this.cord.y - 1, this.cord.x] = $"{this.paths}";
-                    this.paths++;
-                }
-
-            }
-        }
-
-        private void moveRight(int steps) {
-            for (int rights = 0; rights < steps; ++rights) {
-                this.cord.x++;
-                this.numberOfmoves++;
-
-                if (this.numberOfmoves % 3 == 0) {
-                    this.boardMatrix[this.limite - this.cord.y - 1, this.cord.x] = $"{this.paths}";
-                    this.paths++;
-                }
-
-            }
-        }
-
-        private void checkCollision() {
-            if (this.cord.x == this.targetArea.x && this.cord.y == this.targetArea.y) {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Tareget reached");
-                displayBoard();
-                Thread.Sleep(1000);
-                Console.ResetColor();
-                Environment.Exit(0);
-            }
-        }
 
     }
 
