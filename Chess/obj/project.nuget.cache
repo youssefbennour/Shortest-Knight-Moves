@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5Np898sxEbA7GVd1KF4PvQyynVJ5VqXU13Dt0uZ2ULDJ/57RZlRa2Qm4oN20OLW3RtwyDAYSIBThqXcrEC3cTA==",
+  "dgSpecHash": "JUV3VoogqotnhBPHhBhA3inVFsF0WWQSAOGsAAkHT2GrGF+lpxcgHKDmqAzr0evv8ffy/KrqOtLZpUHRKJQ1dw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Taki Academy\\Desktop\\chess\\Shortest-Knight-Moves\\Chess\\Chess.csproj",
+  "projectFilePath": "C:\\Users\\Taki Academy\\Desktop\\Chess\\Chess\\Chess.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Taki Academy\\.nuget\\packages\\aspose.words\\22.12.0\\aspose.words.22.12.0.nupkg.sha512",
     "C:\\Users\\Taki Academy\\.nuget\\packages\\bouncycastle.cryptography\\2.0.0\\bouncycastle.cryptography.2.0.0.nupkg.sha512",
