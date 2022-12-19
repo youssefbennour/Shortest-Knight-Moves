@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-
+using Aspose.Words;
 
 namespace Chess {
-    class Knight {
+    class  Knight {
         public (int x, int y) cord;
         public int limite;
         public string[,] boardMatrix;
@@ -25,22 +25,36 @@ namespace Chess {
 
             for (int i = 0; i < this.limite; i++) {
                 for (int j = 0; j < this.limite; j++) {
-                    this.boardMatrix[i, j] = "*";
+                    this.boardMatrix[i, j] = "0";
                 }
             }
             this.boardMatrix[this.limite - 1, 0] = "K";
-            this.boardMatrix[this.limite - this.targetArea.y - 1, this.targetArea.x] = "T";
+            this.boardMatrix[this.limite - this.targetArea.y - 1, this.targetArea.x] = " T";
         }
 
         public void displayBoard() {
-
+            FileStream ostrm;
+            StreamWriter writer;
+            TextWriter oldOut = Console.Out;
+            try
+            {
+                ostrm = new FileStream("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Redirect.txt", FileMode.OpenOrCreate, FileAccess.Write);
+                writer = new StreamWriter(ostrm);
+            }
+            catch (Exception d)
+            {
+                Console.WriteLine("Cannot open Redirect.txt for writing");
+                Console.WriteLine(d.Message);
+                return;
+            }
+            Console.SetOut(writer);
             Console.Clear();
             for (int i = 0; i < this.limite; i++) {
                 for (int j = 0; j < this.limite; j++) {
                     if (boardMatrix[i, j] == "T") {
                         Console.ForegroundColor = ConsoleColor.Red;
 
-                    } else if (boardMatrix[i, j] != "*") {
+                    } else if (boardMatrix[i, j] != "0") {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                     } else {
 
@@ -50,6 +64,20 @@ namespace Chess {
                 }
                 Console.WriteLine();
             }
+
+            Console.SetOut(oldOut);
+            writer.Close();
+            ostrm.Close();
+            Console.WriteLine("Done");
+
+            var doc = new Aspose.Words.Document("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Redirect.txt");
+
+            doc.Watermark.Remove();
+           
+            //Aspose.Words.Document extractedPage = doc.ExtractPages(0, 1);
+            doc.Save("C:\\Users\\Taki Academy\\Desktop\\Savedpic\\Doc.bmp");
+            
+
 
         }
 
@@ -196,6 +224,7 @@ namespace Chess {
                 Environment.Exit(0);
             }
         }
+
     }
 
 }

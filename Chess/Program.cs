@@ -1,5 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Chess;
+using System.Drawing;
+using System.Net.Http;
+
 
 int xCoordinates, yCoordinates;
 Console.Write("Enter Target X-axis coordinates : ");
@@ -19,3 +22,4 @@ knight.displayBoard();
 
 Console.ResetColor();
 Console.ReadKey();
+
