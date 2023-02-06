@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+Chess/obj/
+Chess/bin/
+/.vs
+
 # User-specific files
 *.rsuser
 *.suo
