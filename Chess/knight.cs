@@ -110,7 +110,8 @@ namespace Chess {
             graphics.DrawString(result, font, brush, 0, 0);
 
             // Create a directory for storing Knight path images in Desktop
-            string imageOutput = @"C:\Users\Taki Academy\Desktop\Knight-Path-Images";
+            string imageOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), filename);
+			Console.WriteLine(imageOutput);
             DateTime currentTime = DateTime.Now;
             if (!Directory.Exists(imageOutput)){
                 Directory.CreateDirectory(imageOutput);
